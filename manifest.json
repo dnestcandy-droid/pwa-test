@@ -32,5 +32,22 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
+  ],
+"screenshots": [
+ {
+  "src": "/screenshots/desktop-view.png",
+  "sizes": "1366x768",
+  "type": "image/png",
+  "form_factor": "wide",
+  "label": "Desktop dashboard view"
+},
+
+    {
+      "src": "screenshots/Screenshot (6).png",
+  "sizes": "1366x768",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Gallery view with featured content"
+    }
   ]
 }
