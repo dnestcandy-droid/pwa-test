@@ -35,7 +35,7 @@
   ],
 "screenshots": [
  {
-  "src": "/screenshots/desktop-view.png",
+  "src": "desktop-view.png",
   "sizes": "1366x768",
   "type": "image/png",
   "form_factor": "wide",
@@ -43,7 +43,7 @@
 },
 
     {
-      "src": "screenshots/Screenshot (6).png",
+      "src": "Screenshot (6).png",
   "sizes": "1366x768",
       "type": "image/png",
       "form_factor": "wide",
@@ -51,3 +51,4 @@
     }
   ]
 }
+
