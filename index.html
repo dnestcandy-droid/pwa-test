@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>D'NestGlobal App</title>
 
-  <!-- PWA Meta Tags -->
+  <!-- PWA Meta -->
   <meta name="theme-color" content="#000000">
   <meta name="description" content="D'NestGlobal Progressive Web Application">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -16,7 +16,7 @@
   <link rel="apple-touch-icon" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-  <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
+  <link rel="manifest" href="manifest.json">
 
   <style>
     #installPopup {
@@ -36,53 +36,23 @@
       flex-wrap: wrap;
       gap: 10px;
     }
-    .popup-content { 
-      display: flex; 
-      align-items: center; 
-      gap: 10px; 
-      flex: 1; 
-    }
-    .popup-buttons { 
-      display: flex; 
-      gap: 10px; 
-    }
-    #installPopup img { 
-      width: 32px; 
-      height: 32px; 
-    }
+    .popup-content { display: flex; align-items: center; gap: 10px; flex: 1; }
+    .popup-buttons { display: flex; gap: 10px; }
+    #installPopup img { width: 32px; height: 32px; }
     #installBtn {
-      background: #00c853; 
-      color: white; 
-      border: none;
-      border-radius: 8px; 
-      padding: 10px 16px; 
-      cursor: pointer;
-      font-size: 14px; 
-      font-weight: bold;
+      background: #00c853; color: white; border: none;
+      border-radius: 8px; padding: 10px 16px; cursor: pointer;
+      font-size: 14px; font-weight: bold;
     }
     #cancelBtn {
-      background: #666; 
-      color: white; 
-      border: none;
-      border-radius: 8px; 
-      padding: 10px 16px; 
-      cursor: pointer;
+      background: #666; color: white; border: none;
+      border-radius: 8px; padding: 10px 16px; cursor: pointer;
       font-size: 14px;
     }
     .debug-info {
       background: #f0f0f0;
-      padding: 10px; 
-      margin: 10px 0; 
-      border-radius: 5px;
-      font-family: monospace; 
-      font-size: 12px;
-    }
-    .requirements {
-      background: #e8f5e8;
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 5px;
-      border-left: 4px solid #00c853;
+      padding: 10px; margin: 10px 0; border-radius: 5px;
+      font-family: monospace; font-size: 12px;
     }
   </style>
 </head>
@@ -90,28 +60,16 @@
   <h1>Welcome to D'NestGlobal App</h1>
   <p>Install our PWA for the best experience.</p>
 
-  <div class="requirements">
-    <h3>📱 PWA Installation Requirements:</h3>
-    <ul>
-      <li>✅ HTTPS connection (or localhost)</li>
-      <li>✅ Valid manifest.json</li>
-      <li>✅ Service Worker registered</li>
-      <li>✅ Icons available</li>
-      <li>✅ User engagement (click the page)</li>
-      <li>✅ Meets Chrome's install criteria</li>
-    </ul>
-  </div>
-
   <div class="debug-info">
     <strong>Debug Info:</strong>
-    <div id="debugStatus">Initializing PWA...</div>
+    <div id="debugStatus">Checking PWA requirements...</div>
   </div>
 
   <!-- Custom install callout -->
   <div id="installPopup">
     <div class="popup-content">
-      <img src="favicon-32x32.png" alt="D'NestGlobal Icon" onerror="this.style.display='none'">
-      <span>Install D'NestGlobal App for offline access?</span>
+      <img src="favicon-32x32.png" alt="D'NestGlobal Icon">
+      <span>Install D'NestGlobal App for a better experience?</span>
     </div>
     <div class="popup-buttons">
       <button id="installBtn">Install</button>
@@ -125,155 +83,66 @@ document.addEventListener('DOMContentLoaded', () => {
   const installPopup = document.getElementById('installPopup');
   const installBtn = document.getElementById('installBtn');
   const cancelBtn = document.getElementById('cancelBtn');
-  const debugStatus = document.getElementById('debugStatus');
 
-  function updateDebug(message) {
-    console.log(message);
-    if (debugStatus) {
-      debugStatus.innerHTML += `<br>${new Date().toLocaleTimeString()}: ${message}`;
-    }
-  }
+  console.log('✅ DOM loaded');
 
-  updateDebug('✅ DOM loaded');
-
-  // --- CRITICAL: Check if we're in a supported environment ---
-  function checkEnvironment() {
-    const isLocalhost = window.location.hostname === 'localhost' || 
-                       window.location.hostname === '127.0.0.1';
-    const isHttps = window.location.protocol === 'https:';
-    
-    if (!isHttps && !isLocalhost) {
-      updateDebug('❌ PWA requires HTTPS (or localhost)');
-      alert('PWA installation requires HTTPS. Currently on: ' + window.location.protocol);
-      return false;
-    }
-    updateDebug('✅ Environment check passed');
-    return true;
-  }
-
-  if (!checkEnvironment()) {
-    return;
-  }
-
-  // --- Register service worker with proper scope ---
+  // --- Register service worker ---
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('service-worker.js')
-      .then(registration => {
-        updateDebug('✅ Service Worker registered');
-        console.log('SW scope:', registration.scope);
-      })
-      .catch(err => {
-        updateDebug('❌ SW failed: ' + err.message);
-      });
-  } else {
-    updateDebug('❌ Service Worker not supported');
+      .then(() => console.log('✅ Service Worker registered'))
+      .catch(err => console.error('❌ Service Worker failed:', err));
   }
 
-  // --- Capture beforeinstallprompt event ---
+  // --- Capture real beforeinstallprompt ---
   window.addEventListener('beforeinstallprompt', (e) => {
-    updateDebug('🎯 beforeinstallprompt FIRED - PWA can be installed');
+    console.log('📲 beforeinstallprompt fired');
     e.preventDefault();
     deferredPrompt = e;
-    
-    // Show popup immediately when install is available
     showPopup();
-    
-    // Also update UI to indicate install is ready
-    document.body.style.borderLeft = '5px solid #00c853';
   });
 
-  // --- Install button handler ---
-  installBtn.addEventListener('click', async () => {
-    updateDebug('🔄 Install button clicked');
-    
-    if (!deferredPrompt) {
-      updateDebug('❌ No install prompt available');
-      alert('Installation not yet available. Please wait or interact with the page more.');
-      return;
-    }
-    
-    // Show the native install prompt
-    updateDebug('🔄 Showing native install prompt...');
-    deferredPrompt.prompt();
-    
-    // Wait for the user to respond
-    try {
-      const choiceResult = await deferredPrompt.userChoice;
-      updateDebug(`✅ User choice: ${choiceResult.outcome}`);
-      
-      if (choiceResult.outcome === 'accepted') {
-        updateDebug('🎉 PWA installation accepted!');
-        // The appinstalled event will handle the rest
-      } else {
-        updateDebug('❌ User declined installation');
-      }
-    } catch (error) {
-      updateDebug('❌ Installation error: ' + error.message);
-    }
-    
-    // Clear the prompt
-    deferredPrompt = null;
-    hidePopup();
-  });
-
-  // --- Track successful installation ---
-  window.addEventListener('appinstalled', (evt) => {
-    updateDebug('🎉 PWA successfully installed!');
-    hidePopup();
-    deferredPrompt = null;
-    
-    // Optional: Redirect or show success message
-    setTimeout(() => {
-      alert('D\'NestGlobal App installed successfully! 🎉');
-    }, 500);
-  });
-
-  cancelBtn.addEventListener('click', () => {
-    updateDebug('⏸️ Installation postponed');
-    hidePopup();
-  });
-
-  function showPopup() {
-    if (installPopup) {
-      installPopup.style.display = 'flex';
-      updateDebug('🔄 Showing install popup');
-    }
-  }
-
-  function hidePopup() {
-    if (installPopup) {
-      installPopup.style.display = 'none';
-    }
-  }
-
-  // --- Check if already installed ---
-  if (window.matchMedia('(display-mode: standalone)').matches) {
-    updateDebug('📱 Already running as installed PWA');
-    hidePopup();
-  }
-
-  // --- Force user engagement (required for some browsers) ---
-  let userInteracted = false;
-  document.addEventListener('click', () => {
-    if (!userInteracted) {
-      userInteracted = true;
-      updateDebug('👆 User interacted with page');
-    }
-  });
-
-  // --- Fallback: Check if we can trigger installation manually ---
+  // --- Force popup even if event not yet fired ---
   setTimeout(() => {
     if (!deferredPrompt) {
-      updateDebug('⏰ No install prompt after 8s - checking manual trigger');
-      
-      // Try to detect if PWA criteria are met but prompt didn't fire
-      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-        updateDebug('🔍 Service Worker active - PWA should be installable');
-      }
+      console.log('⚙️ Forcing test popup (no prompt yet)');
+      showPopup();
     }
-  }, 8000);
+  }, 6000);
+
+  // --- Button actions ---
+  installBtn.addEventListener('click', async () => {
+    console.log('🔄 Install button clicked');
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`✅ User choice: ${outcome}`);
+      deferredPrompt = null;
+    } else {
+      console.log('⚠️ No install prompt available yet — showing test message');
+      alert('No install prompt available yet — Chrome has not fired beforeinstallprompt.');
+    }
+    hidePopup();
+  });
+
+  cancelBtn.addEventListener('click', hidePopup);
+
+  // --- Helpers ---
+  function showPopup() {
+    installPopup.style.display = 'flex';
+    console.log('🔄 Showing install popup');
+  }
+  function hidePopup() {
+    installPopup.style.display = 'none';
+  }
+
+  // --- Check if app is already installed ---
+  if (window.matchMedia('(display-mode: standalone)').matches) {
+    console.log('📱 Already installed — hiding popup');
+    hidePopup();
+  }
 });
 </script>
+
 
 </body>
 </html>
