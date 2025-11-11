@@ -77,99 +77,71 @@
     </div>
   </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const installPopup = document.getElementById('installPopup');
-      const installBtn = document.getElementById('installBtn');
-      const cancelBtn = document.getElementById('cancelBtn');
-      const debugStatus = document.getElementById('debugStatus');
-      let deferredPrompt = null;
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  let deferredPrompt = null;
+  const installPopup = document.getElementById('installPopup');
+  const installBtn = document.getElementById('installBtn');
+  const cancelBtn = document.getElementById('cancelBtn');
 
-      const updateDebug = msg => {
-        console.log(msg);
-        debugStatus.innerHTML += `<br>${new Date().toLocaleTimeString()}: ${msg}`;
-      };
+  console.log('✅ DOM loaded');
 
-      updateDebug('✅ DOM loaded, initializing PWA...');
+  // --- Register service worker ---
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(() => console.log('✅ Service Worker registered'))
+      .catch(err => console.error('❌ Service Worker failed:', err));
+  }
 
-      // ✅ Register service worker
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./service-worker.js')
-          .then(reg => updateDebug('✅ Service Worker registered: ' + reg.scope))
-          .catch(err => updateDebug('❌ SW failed: ' + err.message));
-      } else updateDebug('❌ Service Worker not supported');
+  // --- Capture real beforeinstallprompt ---
+  window.addEventListener('beforeinstallprompt', (e) => {
+    console.log('📲 beforeinstallprompt fired');
+    e.preventDefault();
+    deferredPrompt = e;
+    showPopup();
+  });
 
-      // ✅ Manifest
-      if (document.querySelector('link[rel="manifest"]')) {
-        updateDebug('✅ Manifest found');
-      } else updateDebug('❌ Manifest missing');
+  // --- Force popup even if event not yet fired ---
+  setTimeout(() => {
+    if (!deferredPrompt) {
+      console.log('⚙️ Forcing test popup (no prompt yet)');
+      showPopup();
+    }
+  }, 6000);
 
-      // ✅ Before Install Prompt
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        updateDebug('📲 beforeinstallprompt event fired');
+  // --- Button actions ---
+  installBtn.addEventListener('click', async () => {
+    console.log('🔄 Install button clicked');
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`✅ User choice: ${outcome}`);
+      deferredPrompt = null;
+    } else {
+      console.log('⚠️ No install prompt available yet — showing test message');
+      alert('No install prompt available yet — Chrome has not fired beforeinstallprompt.');
+    }
+    hidePopup();
+  });
 
-        setTimeout(() => showInstallPrompt(), 4000);
-      });
+  cancelBtn.addEventListener('click', hidePopup);
 
-      // ✅ Buttons
-      installBtn.addEventListener('click', async () => {
-        if (!deferredPrompt) return updateDebug('❌ No install prompt available');
-        updateDebug('🔄 Showing native install prompt...');
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        updateDebug(`✅ User response: ${outcome}`);
-        if (outcome !== 'accepted') {
-          setTimeout(() => showInstallPrompt(), 120000);
-        }
-        deferredPrompt = null;
-        hideInstallPrompt();
-      });
+  // --- Helpers ---
+  function showPopup() {
+    installPopup.style.display = 'flex';
+    console.log('🔄 Showing install popup');
+  }
+  function hidePopup() {
+    installPopup.style.display = 'none';
+  }
 
-      cancelBtn.addEventListener('click', () => {
-        hideInstallPrompt();
-        updateDebug('⏸️ Installation postponed');
-      });
+  // --- Check if app is already installed ---
+  if (window.matchMedia('(display-mode: standalone)').matches) {
+    console.log('📱 Already installed — hiding popup');
+    hidePopup();
+  }
+});
+</script>
 
-      window.addEventListener('appinstalled', () => {
-        hideInstallPrompt();
-        deferredPrompt = null;
-        updateDebug('🎉 App installed successfully!');
-      });
-
-      function showInstallPrompt() {
-        if (deferredPrompt && installPopup) {
-          installPopup.style.display = 'flex';
-          updateDebug('🔄 Showing install popup');
-        }
-      }
-      function hideInstallPrompt() {
-        installPopup.style.display = 'none';
-      }
-
-      // ✅ HTTPS check
-      window.addEventListener('load', () => {
-        if (location.protocol === 'https:' || location.hostname === 'localhost')
-          updateDebug('✅ HTTPS or localhost connection');
-        else updateDebug('❌ Not HTTPS - install may fail');
-      });
-
-      // ✅ iPhone fallback
-      if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
-        installPopup.style.display = 'flex';
-        document.querySelector('.popup-content span').textContent =
-          'To install: tap Share → Add to Home Screen';
-      }
-
-      // ✅ Auto show if beforeinstallprompt never fired (for testing)
-      setTimeout(() => {
-        if (!deferredPrompt) {
-          updateDebug('⚠️ Forcing test popup (no prompt event yet)');
-          installPopup.style.display = 'flex';
-        }
-      }, 10000);
-    });
-  </script>
 </body>
 </html>
