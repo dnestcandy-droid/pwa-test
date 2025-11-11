@@ -5,20 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>D'NestGlobal App</title>
 
-  <!-- PWA Meta -->
+  <!-- PWA Meta Tags -->
   <meta name="theme-color" content="#000000">
   <meta name="description" content="D'NestGlobal Progressive Web Application">
+  
+  <!-- iOS Specific Meta Tags -->
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="D'NestGlobal">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="mobile-web-app-capable" content="yes">
 
-  <!-- Icons -->
-  <link rel="apple-touch-icon" href="favicon-32x32.png">
+  <!-- Icons for all platforms -->
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180x180.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="apple-touch-icon-167x167.png">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
+
+  <!-- iOS Splash Screen (optional but recommended) -->
+  <link rel="apple-touch-startup-image" href="apple-splash-2048-2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
 
   <style>
+    /* Install popup styles */
     #installPopup {
       display: none;
       position: fixed;
@@ -36,40 +47,124 @@
       flex-wrap: wrap;
       gap: 10px;
     }
-    .popup-content { display: flex; align-items: center; gap: 10px; flex: 1; }
-    .popup-buttons { display: flex; gap: 10px; }
-    #installPopup img { width: 32px; height: 32px; }
+    .popup-content { 
+      display: flex; 
+      align-items: center; 
+      gap: 10px; 
+      flex: 1; 
+    }
+    .popup-buttons { 
+      display: flex; 
+      gap: 10px; 
+    }
+    #installPopup img { 
+      width: 32px; 
+      height: 32px; 
+    }
     #installBtn {
-      background: #00c853; color: white; border: none;
-      border-radius: 8px; padding: 10px 16px; cursor: pointer;
-      font-size: 14px; font-weight: bold;
+      background: #00c853; 
+      color: white; 
+      border: none;
+      border-radius: 8px; 
+      padding: 10px 16px; 
+      cursor: pointer;
+      font-size: 14px; 
+      font-weight: bold;
     }
     #cancelBtn {
-      background: #666; color: white; border: none;
-      border-radius: 8px; padding: 10px 16px; cursor: pointer;
+      background: #666; 
+      color: white; 
+      border: none;
+      border-radius: 8px; 
+      padding: 10px 16px; 
+      cursor: pointer;
       font-size: 14px;
     }
+
+    /* iOS-specific install instructions */
+    #iosInstructions {
+      display: none;
+      background: #e3f2fd;
+      border: 1px solid #2196f3;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+    }
+    #iosInstructions ol {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+    #iosInstructions li {
+      margin: 8px 0;
+    }
+
     .debug-info {
       background: #f0f0f0;
-      padding: 10px; margin: 10px 0; border-radius: 5px;
-      font-family: monospace; font-size: 12px;
+      padding: 10px; 
+      margin: 10px 0; 
+      border-radius: 5px;
+      font-family: monospace; 
+      font-size: 12px;
     }
+    .requirements {
+      background: #e8f5e8;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border-left: 4px solid #00c853;
+    }
+    
+    /* Platform-specific badges */
+    .platform-badge {
+      display: inline-block;
+      background: #666;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      margin-left: 5px;
+    }
+    .android-badge { background: #4CAF50; }
+    .ios-badge { background: #007AFF; }
   </style>
 </head>
 <body>
   <h1>Welcome to D'NestGlobal App</h1>
   <p>Install our PWA for the best experience.</p>
 
-  <div class="debug-info">
-    <strong>Debug Info:</strong>
-    <div id="debugStatus">Checking PWA requirements...</div>
+  <!-- iOS-specific instructions -->
+  <div id="iosInstructions">
+    <h3>📱 Install on iPhone/iPad</h3>
+    <ol>
+      <li>Tap the <strong>Share button</strong> <span style="font-size:18px">⎋</span> at the bottom</li>
+      <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
+      <li>Tap <strong>"Add"</strong> in the top right corner</li>
+    </ol>
+    <p><em>The app will now appear on your home screen!</em></p>
   </div>
 
-  <!-- Custom install callout -->
+  <div class="requirements">
+    <h3>📱 PWA Installation Guide:</h3>
+    <ul>
+      <li><strong>Android/Chrome:</strong> <span class="platform-badge android-badge">Auto-prompt</span></li>
+      <li><strong>iPhone/Safari:</strong> <span class="platform-badge ios-badge">Manual install</span></li>
+      <li>✅ HTTPS connection (or localhost)</li>
+      <li>✅ Valid manifest.json</li>
+      <li>✅ Service Worker registered</li>
+      <li>✅ Icons available</li>
+    </ul>
+  </div>
+
+  <div class="debug-info">
+    <strong>Debug Info:</strong>
+    <div id="debugStatus">Detecting platform...</div>
+  </div>
+
+  <!-- Custom install callout (mainly for Android) -->
   <div id="installPopup">
     <div class="popup-content">
-      <img src="favicon-32x32.png" alt="D'NestGlobal Icon">
-      <span>Install D'NestGlobal App for a better experience?</span>
+      <img src="favicon-32x32.png" alt="D'NestGlobal Icon" onerror="this.style.display='none'">
+      <span>Install D'NestGlobal App for offline access?</span>
     </div>
     <div class="popup-buttons">
       <button id="installBtn">Install</button>
@@ -83,66 +178,180 @@ document.addEventListener('DOMContentLoaded', () => {
   const installPopup = document.getElementById('installPopup');
   const installBtn = document.getElementById('installBtn');
   const cancelBtn = document.getElementById('cancelBtn');
+  const debugStatus = document.getElementById('debugStatus');
+  const iosInstructions = document.getElementById('iosInstructions');
 
-  console.log('✅ DOM loaded');
+  // Platform detection
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                      window.navigator.standalone;
 
-  // --- Register service worker ---
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(() => console.log('✅ Service Worker registered'))
-      .catch(err => console.error('❌ Service Worker failed:', err));
+  function updateDebug(message) {
+    console.log(message);
+    if (debugStatus) {
+      debugStatus.innerHTML += `<br>${new Date().toLocaleTimeString()}: ${message}`;
+    }
   }
 
-  // --- Capture real beforeinstallprompt ---
-  window.addEventListener('beforeinstallprompt', (e) => {
-    console.log('📲 beforeinstallprompt fired');
-    e.preventDefault();
-    deferredPrompt = e;
-    showPopup();
-  });
+  updateDebug(`🌐 Platform: ${isIOS ? 'iOS' : 'Android/Other'}`);
+  updateDebug(`🔍 Browser: ${isSafari ? 'Safari' : 'Other'}`);
+  updateDebug(`📱 Standalone: ${isStandalone ? 'Yes' : 'No'}`);
 
-  // --- Force popup even if event not yet fired ---
-  setTimeout(() => {
-    if (!deferredPrompt) {
-      console.log('⚙️ Forcing test popup (no prompt yet)');
+  // --- iOS Safari Specific Logic ---
+  if (isIOS) {
+    updateDebug('📱 iOS detected - showing manual install instructions');
+    
+    // Show iOS instructions immediately
+    if (iosInstructions) {
+      iosInstructions.style.display = 'block';
+    }
+    
+    // Hide Android-style install button for iOS
+    if (installPopup) {
+      installPopup.style.display = 'none';
+    }
+
+    // For iOS, we rely on the native Safari "Add to Home Screen" flow
+    updateDebug('ℹ️ iOS users: Use Share → "Add to Home Screen"');
+    
+  } else {
+    // --- Android/Chrome Logic ---
+    updateDebug('🤖 Android/Chrome detected - using standard PWA flow');
+
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(registration => {
+          updateDebug('✅ Service Worker registered');
+        })
+        .catch(err => {
+          updateDebug('❌ SW failed: ' + err.message);
+        });
+    }
+
+    // Capture beforeinstallprompt event (Android/Chrome only)
+    window.addEventListener('beforeinstallprompt', (e) => {
+      updateDebug('🎯 beforeinstallprompt FIRED - PWA can be installed');
+      e.preventDefault();
+      deferredPrompt = e;
+      
+      // Show popup for Android users
       showPopup();
-    }
-  }, 6000);
+    });
 
-  // --- Button actions ---
-  installBtn.addEventListener('click', async () => {
-    console.log('🔄 Install button clicked');
-    if (deferredPrompt) {
+    // Install button handler (Android/Chrome)
+    installBtn.addEventListener('click', async () => {
+      updateDebug('🔄 Install button clicked');
+      
+      if (!deferredPrompt) {
+        updateDebug('❌ No install prompt available');
+        alert('Installation not yet available. Please wait or interact with the page more.');
+        return;
+      }
+      
+      updateDebug('🔄 Showing native install prompt...');
       deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      console.log(`✅ User choice: ${outcome}`);
+      
+      try {
+        const choiceResult = await deferredPrompt.userChoice;
+        updateDebug(`✅ User choice: ${choiceResult.outcome}`);
+        
+        if (choiceResult.outcome === 'accepted') {
+          updateDebug('🎉 PWA installation accepted!');
+        }
+      } catch (error) {
+        updateDebug('❌ Installation error: ' + error.message);
+      }
+      
       deferredPrompt = null;
-    } else {
-      console.log('⚠️ No install prompt available yet — showing test message');
-      alert('No install prompt available yet — Chrome has not fired beforeinstallprompt.');
-    }
+      hidePopup();
+    });
+
+    cancelBtn.addEventListener('click', () => {
+      updateDebug('⏸️ Installation postponed');
+      hidePopup();
+    });
+  }
+
+  // --- Track successful installation (both platforms) ---
+  window.addEventListener('appinstalled', (evt) => {
+    updateDebug('🎉 PWA successfully installed!');
     hidePopup();
+    deferredPrompt = null;
+    
+    // Show success message
+    setTimeout(() => {
+      alert('D\'NestGlobal App installed successfully! 🎉');
+    }, 500);
   });
 
-  cancelBtn.addEventListener('click', hidePopup);
-
-  // --- Helpers ---
-  function showPopup() {
-    installPopup.style.display = 'flex';
-    console.log('🔄 Showing install popup');
-  }
-  function hidePopup() {
-    installPopup.style.display = 'none';
-  }
-
-  // --- Check if app is already installed ---
-  if (window.matchMedia('(display-mode: standalone)').matches) {
-    console.log('📱 Already installed — hiding popup');
+  // --- Check if already installed ---
+  if (isStandalone) {
+    updateDebug('📱 Already running as installed PWA');
     hidePopup();
+    if (iosInstructions) iosInstructions.style.display = 'none';
   }
+
+  // --- Universal functions ---
+  function showPopup() {
+    if (installPopup && !isIOS) {
+      installPopup.style.display = 'flex';
+      updateDebug('🔄 Showing install popup');
+    }
+  }
+
+  function hidePopup() {
+    if (installPopup) {
+      installPopup.style.display = 'none';
+    }
+  }
+
+  // --- Enhanced iOS detection and guidance ---
+  if (isIOS && !isStandalone) {
+    // Show a helpful message for iOS users
+    setTimeout(() => {
+      updateDebug('💡 Tip: Tap the share icon and select "Add to Home Screen"');
+    }, 2000);
+
+    // Add visual cue for iOS users
+    const style = document.createElement('style');
+    style.textContent = `
+      @media (max-width: 768px) {
+        body:after {
+          content: "Tap share icon → Add to Home Screen";
+          position: fixed;
+          bottom: 10px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: rgba(0,0,0,0.8);
+          color: white;
+          padding: 8px 12px;
+          border-radius: 20px;
+          font-size: 12px;
+          z-index: 10000;
+          animation: pulse 2s infinite;
+        }
+      }
+      @keyframes pulse {
+        0% { opacity: 0.7; }
+        50% { opacity: 1; }
+        100% { opacity: 0.7; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  // --- User engagement tracking ---
+  let userInteracted = false;
+  document.addEventListener('click', () => {
+    if (!userInteracted) {
+      userInteracted = true;
+      updateDebug('👆 User interacted with page');
+    }
+  });
 });
 </script>
-
 
 </body>
 </html>
