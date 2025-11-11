@@ -4,22 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>D'NestGlobal App</title>
-  
-  <!-- PWA Meta Tags -->
+
+  <!-- PWA Meta -->
   <meta name="theme-color" content="#000000">
   <meta name="description" content="D'NestGlobal Progressive Web Application">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="D'NestGlobal">
-  
+
   <!-- Icons -->
   <link rel="apple-touch-icon" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-  <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
-  
+  <link rel="manifest" href="manifest.json">
+
   <style>
-    /* Hidden install popup by default */
     #installPopup {
       display: none;
       position: fixed;
@@ -37,55 +36,30 @@
       flex-wrap: wrap;
       gap: 10px;
     }
-    .popup-content {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex: 1;
-    }
-    .popup-buttons {
-      display: flex;
-      gap: 10px;
-    }
-    #installPopup img {
-      width: 32px;
-      height: 32px;
-    }
+    .popup-content { display: flex; align-items: center; gap: 10px; flex: 1; }
+    .popup-buttons { display: flex; gap: 10px; }
+    #installPopup img { width: 32px; height: 32px; }
     #installBtn {
-      background: #00c853;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 16px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: bold;
+      background: #00c853; color: white; border: none;
+      border-radius: 8px; padding: 10px 16px; cursor: pointer;
+      font-size: 14px; font-weight: bold;
     }
     #cancelBtn {
-      background: #666;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 16px;
-      cursor: pointer;
+      background: #666; color: white; border: none;
+      border-radius: 8px; padding: 10px 16px; cursor: pointer;
       font-size: 14px;
     }
-    
-    /* Debug info */
     .debug-info {
       background: #f0f0f0;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-      font-family: monospace;
-      font-size: 12px;
+      padding: 10px; margin: 10px 0; border-radius: 5px;
+      font-family: monospace; font-size: 12px;
     }
   </style>
 </head>
 <body>
   <h1>Welcome to D'NestGlobal App</h1>
-  <p>This is a Progressive Web App that can be installed on your device.</p>
-  
+  <p>Install our PWA for the best experience.</p>
+
   <div class="debug-info">
     <strong>Debug Info:</strong>
     <div id="debugStatus">Checking PWA requirements...</div>
@@ -94,8 +68,8 @@
   <!-- Custom install callout -->
   <div id="installPopup">
     <div class="popup-content">
-      <img src="favicon-32x32.png" alt="D'NestGlobal Icon" onerror="this.style.display='none'">
-      <span>Install D'NestGlobal App for better experience?</span>
+      <img src="favicon-32x32.png" alt="D'NestGlobal Icon">
+      <span>Install D'NestGlobal App for a better experience?</span>
     </div>
     <div class="popup-buttons">
       <button id="installBtn">Install</button>
@@ -104,167 +78,98 @@
   </div>
 
   <script>
-    // Wait for DOM to be fully loaded
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('✅ DOM loaded, initializing PWA...');
-      
-      let deferredPrompt = null;
+    document.addEventListener('DOMContentLoaded', () => {
       const installPopup = document.getElementById('installPopup');
       const installBtn = document.getElementById('installBtn');
       const cancelBtn = document.getElementById('cancelBtn');
       const debugStatus = document.getElementById('debugStatus');
+      let deferredPrompt = null;
 
-      // Update debug info
-      function updateDebugInfo(message) {
-        if (debugStatus) {
-          debugStatus.innerHTML += '<br>' + new Date().toLocaleTimeString() + ': ' + message;
-        }
-        console.log(message);
-      }
+      const updateDebug = msg => {
+        console.log(msg);
+        debugStatus.innerHTML += `<br>${new Date().toLocaleTimeString()}: ${msg}`;
+      };
 
-      // Check if elements exist
-      if (!installPopup || !installBtn || !cancelBtn) {
-        updateDebugInfo('❌ Install popup elements not found');
-        return;
-      }
+      updateDebug('✅ DOM loaded, initializing PWA...');
 
-      updateDebugInfo('✅ DOM elements found');
-
-      // Register service worker
+      // ✅ Register service worker
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./service-worker.js')
-          .then((registration) => {
-            updateDebugInfo('✅ Service Worker registered');
-            console.log('Service Worker registered with scope:', registration.scope);
-          })
-          .catch((error) => {
-            updateDebugInfo('❌ Service Worker failed: ' + error.message);
-            console.error('Service Worker registration failed:', error);
-          });
-      } else {
-        updateDebugInfo('❌ Service Worker not supported');
-      }
+          .then(reg => updateDebug('✅ Service Worker registered: ' + reg.scope))
+          .catch(err => updateDebug('❌ SW failed: ' + err.message));
+      } else updateDebug('❌ Service Worker not supported');
 
-      // Check manifest
+      // ✅ Manifest
       if (document.querySelector('link[rel="manifest"]')) {
-        updateDebugInfo('✅ Manifest found');
-      } else {
-        updateDebugInfo('❌ Manifest not found');
-      }
+        updateDebug('✅ Manifest found');
+      } else updateDebug('❌ Manifest missing');
 
-      // Capture install event
+      // ✅ Before Install Prompt
       window.addEventListener('beforeinstallprompt', (e) => {
-        updateDebugInfo('📲 beforeinstallprompt event fired');
-        
-        // Prevent the mini-infobar from appearing on mobile
         e.preventDefault();
-        
-        // Stash the event so it can be triggered later
         deferredPrompt = e;
-        
-        updateDebugInfo('✅ PWA installation available');
+        updateDebug('📲 beforeinstallprompt event fired');
 
-        // Show our custom install prompt after short delay
-        setTimeout(() => {
-          showInstallPrompt();
-        }, 2000);
+        setTimeout(() => showInstallPrompt(), 4000);
       });
 
-      // Install button click handler - FIXED VERSION
+      // ✅ Buttons
       installBtn.addEventListener('click', async () => {
-        updateDebugInfo('🔄 Install button clicked');
-        
-        if (!deferredPrompt) {
-          updateDebugInfo('❌ No deferred prompt available');
-          return;
-        }
-        
-        updateDebugInfo('🔄 Showing native install prompt...');
-        
-        // Show the native install prompt
+        if (!deferredPrompt) return updateDebug('❌ No install prompt available');
+        updateDebug('🔄 Showing native install prompt...');
         deferredPrompt.prompt();
-        
-        // Wait for the user to respond to the prompt
-        try {
-          const choiceResult = await deferredPrompt.userChoice;
-          updateDebugInfo(`✅ User response: ${choiceResult.outcome}`);
-          
-          if (choiceResult.outcome === 'accepted') {
-            updateDebugInfo('🎉 User accepted the install prompt');
-          } else {
-            updateDebugInfo('❌ User dismissed the install prompt');
-          }
-        } catch (error) {
-          updateDebugInfo('❌ Error during installation: ' + error.message);
+        const { outcome } = await deferredPrompt.userChoice;
+        updateDebug(`✅ User response: ${outcome}`);
+        if (outcome !== 'accepted') {
+          setTimeout(() => showInstallPrompt(), 120000);
         }
-        
-        // Clear the deferredPrompt variable
         deferredPrompt = null;
         hideInstallPrompt();
       });
 
-      // Cancel button click handler
       cancelBtn.addEventListener('click', () => {
-        updateDebugInfo('⏸️ Installation postponed');
         hideInstallPrompt();
-        
-        // Show again after 2 minutes
-        setTimeout(() => {
-          if (deferredPrompt) {
-            showInstallPrompt();
-          }
-        }, 120000);
+        updateDebug('⏸️ Installation postponed');
       });
 
-      // Track app installation
-      window.addEventListener('appinstalled', (evt) => {
-        updateDebugInfo('🎉 PWA was successfully installed!');
+      window.addEventListener('appinstalled', () => {
         hideInstallPrompt();
         deferredPrompt = null;
+        updateDebug('🎉 App installed successfully!');
       });
 
-      // Function to show install prompt
       function showInstallPrompt() {
-        if (installPopup && deferredPrompt) {
+        if (deferredPrompt && installPopup) {
           installPopup.style.display = 'flex';
-          updateDebugInfo('🔄 Showing install popup');
+          updateDebug('🔄 Showing install popup');
         }
       }
-
-      // Function to hide install prompt
       function hideInstallPrompt() {
-        if (installPopup) {
-          installPopup.style.display = 'none';
-        }
+        installPopup.style.display = 'none';
       }
 
-      // Check if app is already installed
-      function isAppInstalled() {
-        return window.matchMedia('(display-mode: standalone)').matches || 
-               window.navigator.standalone === true;
-      }
-
-      if (isAppInstalled()) {
-        updateDebugInfo('📱 App is already installed (standalone mode)');
-        hideInstallPrompt();
-      }
-
-      // Check PWA criteria
+      // ✅ HTTPS check
       window.addEventListener('load', () => {
-        updateDebugInfo('🔍 Checking PWA installation criteria...');
-        
-        // Check if site is served over HTTPS
-        if (location.protocol === 'https:') {
-          updateDebugInfo('✅ HTTPS connection');
-        } else if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-          updateDebugInfo('✅ Localhost (allowed for testing)');
-        } else {
-          updateDebugInfo('❌ Not HTTPS - PWA installation may not work');
-        }
+        if (location.protocol === 'https:' || location.hostname === 'localhost')
+          updateDebug('✅ HTTPS or localhost connection');
+        else updateDebug('❌ Not HTTPS - install may fail');
       });
+
+      // ✅ iPhone fallback
+      if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
+        installPopup.style.display = 'flex';
+        document.querySelector('.popup-content span').textContent =
+          'To install: tap Share → Add to Home Screen';
+      }
+
+      // ✅ Auto show if beforeinstallprompt never fired (for testing)
+      setTimeout(() => {
+        if (!deferredPrompt) {
+          updateDebug('⚠️ Forcing test popup (no prompt event yet)');
+          installPopup.style.display = 'flex';
+        }
+      }, 10000);
     });
   </script>
 </body>
-
 </html>
-
