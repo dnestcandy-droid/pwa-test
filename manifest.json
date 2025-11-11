@@ -2,12 +2,12 @@
   "name": "D'NestGlobal App",
   "short_name": "D'NestGlobal",
   "description": "Progressive Web App from D'NestGlobal",
-  "start_url": "/",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
   "orientation": "portrait",
-  "scope": "/",
   "categories": ["business", "productivity"],
   "icons": [
     {
@@ -16,7 +16,7 @@
       "type": "image/png"
     },
     {
-      "src": "favicon-16x16.png", 
+      "src": "favicon-16x16.png",
       "sizes": "16x16",
       "type": "image/png"
     },
@@ -28,27 +28,25 @@
     },
     {
       "src": "android-chrome-512x512.png",
-      "sizes": "512x512", 
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
   ],
-"screenshots": [
- {
-  "src": "desktop-view.png",
-  "sizes": "1366x768",
-  "type": "image/png",
-  "form_factor": "wide",
-  "label": "Desktop dashboard view"
-},
-
+  "screenshots": [
+    {
+      "src": "desktop-view.png",
+      "sizes": "1366x768",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Desktop dashboard view"
+    },
     {
       "src": "Screenshot (6).png",
-  "sizes": "1366x768",
+      "sizes": "1366x768",
       "type": "image/png",
       "form_factor": "wide",
       "label": "Gallery view with featured content"
     }
   ]
 }
-
