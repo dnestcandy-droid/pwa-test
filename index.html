@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>D'NestGlobal App</title>
 
-  <!-- Critical PWA Meta Tags -->
+  <!-- PWA Meta Tags -->
   <meta name="theme-color" content="#000000">
   <meta name="description" content="D'NestGlobal Progressive Web Application">
   <meta name="application-name" content="D'NestGlobal">
@@ -17,59 +17,60 @@
   <meta name="format-detection" content="telephone=no">
   <meta name="mobile-web-app-capable" content="yes">
 
-  <!-- Icons with absolute paths -->
-  <link rel="icon" type="image/png" href="/favicon-32x32.png">
-  <link rel="apple-touch-icon" href="/favicon-32x32.png">
-  <link rel="manifest" href="https://dnestcandy-droid.github.io/pwa-test/manifest.json" crossorigin="use-credentials">
+  <!-- Icons -->
+  <link rel="icon" type="image/png" href="favicon-32x32.png">
+  <link rel="apple-touch-icon" href="favicon-32x32.png">
+  <link rel="manifest" href="manifest.json">
 
   <style>
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
+      padding: 20px;
     }
 
-    .app-container {
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
       background: white;
       border-radius: 20px;
       padding: 30px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-      max-width: 500px;
-      margin: 0 auto;
     }
 
     h1 {
-      color: #333;
-      margin-bottom: 15px;
       text-align: center;
+      color: #333;
+      margin-bottom: 10px;
     }
 
-    .feature-list {
-      margin: 20px 0;
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
     }
 
-    .feature-item {
+    .feature {
       display: flex;
       align-items: center;
-      margin: 10px 0;
-      padding: 10px;
+      margin: 15px 0;
+      padding: 15px;
       background: #f8f9fa;
       border-radius: 10px;
     }
 
-    /* Install Section */
     .install-section {
       background: #e8f5e8;
       border: 2px solid #00c853;
       border-radius: 15px;
-      padding: 20px;
+      padding: 25px;
       margin: 25px 0;
       text-align: center;
     }
@@ -78,29 +79,20 @@
       background: linear-gradient(135deg, #00c853, #64dd17);
       color: white;
       border: none;
-      border-radius: 25px;
       padding: 15px 30px;
+      border-radius: 25px;
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
       margin: 10px;
       box-shadow: 0 4px 15px rgba(0,200,83,0.3);
-      transition: all 0.3s ease;
-    }
-
-    .install-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0,200,83,0.4);
     }
 
     .install-btn:disabled {
-      background: #cccccc;
+      background: #ccc;
       cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
     }
 
-    /* Platform Instructions */
     .instructions {
       background: #e3f2fd;
       border-radius: 15px;
@@ -111,28 +103,8 @@
 
     .instructions.active {
       display: block;
-      animation: fadeIn 0.5s ease;
     }
 
-    .instructions h3 {
-      color: #1976d2;
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .instructions ol {
-      margin: 15px 0;
-      padding-left: 20px;
-    }
-
-    .instructions li {
-      margin: 12px 0;
-      line-height: 1.5;
-    }
-
-    /* Status Panel */
     .status-panel {
       background: #2c3e50;
       color: white;
@@ -144,7 +116,6 @@
     .status-item {
       display: flex;
       justify-content: space-between;
-      align-items: center;
       margin: 10px 0;
       padding: 10px;
       background: rgba(255,255,255,0.1);
@@ -158,160 +129,112 @@
       margin-right: 10px;
     }
 
-    .status-good { background: #00c853; animation: pulse 2s infinite; }
-    .status-warning { background: #ff9800; }
-    .status-bad { background: #f44336; }
+    .good { background: #00c853; }
+    .warning { background: #ff9800; }
+    .bad { background: #f44336; }
 
-    /* Debug Info */
-    .debug-info {
+    .debug {
       background: #1a1a1a;
       color: #00ff00;
       border-radius: 10px;
       padding: 15px;
       margin: 20px 0;
-      font-family: 'Courier New', monospace;
+      font-family: monospace;
       font-size: 12px;
       max-height: 200px;
       overflow-y: auto;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-
-    /* Mobile Responsive */
-    @media (max-width: 768px) {
-      body {
-        padding: 10px;
-      }
-      
-      .app-container {
-        padding: 20px;
-        border-radius: 15px;
-      }
-      
-      .install-btn {
-        width: 100%;
-        margin: 5px 0;
-      }
-    }
   </style>
 </head>
 <body>
-  <div class="app-container">
+  <div class="container">
     <h1>🚀 D'NestGlobal</h1>
-    <p style="text-align: center; color: #666; margin-bottom: 20px;">Progressive Web App</p>
+    <p class="subtitle">Progressive Web App</p>
 
-    <div class="feature-list">
-      <div class="feature-item">
-        <span style="margin-right: 10px;">📱</span>
-        <span>Install on your home screen</span>
-      </div>
-      <div class="feature-item">
-        <span style="margin-right: 10px;">⚡</span>
-        <span>Fast loading & offline support</span>
-      </div>
-      <div class="feature-item">
-        <span style="margin-right: 10px;">🔔</span>
-        <span>Push notifications</span>
-      </div>
+    <div class="feature">
+      <span style="margin-right: 15px;">📱</span>
+      <span>Install on home screen</span>
+    </div>
+    <div class="feature">
+      <span style="margin-right: 15px;">⚡</span>
+      <span>Fast loading & offline support</span>
+    </div>
+    <div class="feature">
+      <span style="margin-right: 15px;">🔔</span>
+      <span>Push notifications</span>
     </div>
 
-    <!-- Install Section -->
     <div class="install-section">
       <h3>📲 Install Our App</h3>
-      <p>Get the full mobile experience with home screen access</p>
+      <p>Get the full mobile experience</p>
       
       <button class="install-btn" id="androidInstall" disabled>
-        <span id="androidText">Install for Android</span>
-        <span id="androidLoader" style="display:none;">🔄 Checking...</span>
+        Install for Android
       </button>
       
       <button class="install-btn" id="iosInstall">
-        📱 Install for iPhone
+        Install for iPhone
       </button>
     </div>
 
-    <!-- Android Instructions -->
     <div class="instructions" id="androidInstructions">
       <h3>🤖 Android Installation</h3>
-      <p>Follow these steps to install:</p>
       <ol>
-        <li>Wait for the "Add to Home Screen" prompt</li>
-        <li>Or tap the 3-dot menu → "Install app"</li>
-        <li>Or tap "Add to Home Screen" in the browser menu</li>
+        <li>Tap Chrome menu (3 dots)</li>
+        <li>Select "Add to Home screen"</li>
+        <li>Confirm installation</li>
       </ol>
-      <p><em>The app will appear on your home screen!</em></p>
     </div>
 
-    <!-- iOS Instructions -->
     <div class="instructions" id="iosInstructions">
       <h3>🍎 iPhone Installation</h3>
-      <p>Follow these steps:</p>
       <ol>
-        <li>Tap the <strong>Share button</strong> <span style="font-size:18px">⎋</span> at the bottom</li>
-        <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
-        <li>Tap <strong>"Add"</strong> in the top right corner</li>
+        <li>Tap Share button <span style="font-size:18px">⎋</span></li>
+        <li>Select "Add to Home Screen"</li>
+        <li>Tap "Add"</li>
       </ol>
-      <p><em>The app will now appear on your home screen!</em></p>
     </div>
 
-    <!-- Status Panel -->
     <div class="status-panel">
-      <h3 style="color: white; margin-bottom: 15px;">🔍 Installation Status</h3>
+      <h3 style="color: white;">🔍 Installation Status</h3>
       <div id="statusItems">
-        <div class="status-item">
-          <span>PWA Detect</span>
-          <div>
-            <span class="status-indicator status-bad"></span>
-            <span>Checking...</span>
-          </div>
-        </div>
         <div class="status-item">
           <span>Service Worker</span>
           <div>
-            <span class="status-indicator status-bad"></span>
+            <span class="status-indicator bad"></span>
             <span>Checking...</span>
           </div>
         </div>
         <div class="status-item">
           <span>Manifest</span>
           <div>
-            <span class="status-indicator status-bad"></span>
+            <span class="status-indicator bad"></span>
             <span>Checking...</span>
           </div>
         </div>
         <div class="status-item">
-          <span>HTTPS</span>
+          <span>Install Ready</span>
           <div>
-            <span class="status-indicator status-bad"></span>
+            <span class="status-indicator bad"></span>
             <span>Checking...</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Debug Console -->
-    <div class="debug-info">
-      <strong>Console Output:</strong>
-      <div id="debugConsole">Initializing D'NestGlobal PWA...</div>
+    <div class="debug">
+      <strong>Console:</strong>
+      <div id="debugConsole">Initializing...</div>
     </div>
   </div>
 
 <script>
-class PWAInstaller {
+class GitHubPagesPWA {
   constructor() {
     this.deferredPrompt = null;
     this.isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     this.isAndroid = /Android/.test(navigator.userAgent);
-    this.isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
-                       window.navigator.standalone;
+    this.isStandalone = window.matchMedia('(display-mode: standalone)').matches;
     
     this.elements = {
       androidInstall: document.getElementById('androidInstall'),
@@ -326,9 +249,8 @@ class PWAInstaller {
   }
 
   log(message, type = 'info') {
-    const timestamp = new Date().toLocaleTimeString();
     const icons = { info: 'ℹ️', success: '✅', error: '❌', warning: '⚠️' };
-    const messageHTML = `<div>${icons[type]} [${timestamp}] ${message}</div>`;
+    const messageHTML = `<div>${icons[type]} ${message}</div>`;
     
     console.log(`PWA: ${message}`);
     if (this.elements.debugConsole) {
@@ -337,48 +259,15 @@ class PWAInstaller {
     }
   }
 
-  updateStatus(item, status, message) {
-    const statusMap = {
-      good: { class: 'status-good', text: '✓' },
-      warning: { class: 'status-warning', text: '⚠' },
-      bad: { class: 'status-bad', text: '✗' }
-    };
-
-    const statusElement = this.elements.statusItems.children[item];
+  updateStatus(index, status, message) {
+    const statusElement = this.elements.statusItems.children[index];
     if (statusElement) {
       const indicator = statusElement.querySelector('.status-indicator');
       const text = statusElement.querySelector('.status-item div span:last-child');
       
-      if (indicator) {
-        indicator.className = `status-indicator ${statusMap[status].class}`;
-      }
-      if (text) {
-        text.textContent = message;
-      }
+      indicator.className = `status-indicator ${status}`;
+      text.textContent = message;
     }
-  }
-
-  async checkRequirements() {
-    this.log('Checking PWA requirements...');
-    
-    // Check HTTPS/Localhost
-    const isSecure = location.protocol === 'https:' || 
-                    location.hostname === 'localhost' || 
-                    location.hostname === '127.0.0.1';
-    this.updateStatus(3, isSecure ? 'good' : 'warning', 
-      isSecure ? 'Secure Connection' : 'Not HTTPS (may not install)');
-
-    // Check Manifest
-    const hasManifest = document.querySelector('link[rel="manifest"]') !== null;
-    this.updateStatus(2, hasManifest ? 'good' : 'bad', 
-      hasManifest ? 'Manifest Found' : 'No Manifest');
-
-    // Check Service Worker
-    const hasSW = 'serviceWorker' in navigator;
-    this.updateStatus(1, hasSW ? 'good' : 'bad', 
-      hasSW ? 'Supported' : 'Not Supported');
-
-    return { isSecure, hasManifest, hasSW };
   }
 
   async registerServiceWorker() {
@@ -388,138 +277,126 @@ class PWAInstaller {
     }
 
     try {
-      // Use absolute path for service worker
-      const registration = await navigator.serviceWorker.register('./service-worker.js', {
-        scope: '/',
-        updateViaCache: 'none'
+      // GitHub Pages requires service worker to be in root or same directory
+      // Use current directory scope for GitHub Pages compatibility
+      const registration = await navigator.serviceWorker.register('sw.js', {
+        scope: './' // Current directory scope for GitHub Pages
       });
 
       this.log('Service Worker registered successfully', 'success');
-      
-      // Wait for service worker to be ready
-      if (registration.installing) {
-        await new Promise(resolve => {
-          registration.installing.addEventListener('statechange', (e) => {
-            if (e.target.state === 'activated') {
-              resolve();
-            }
-          });
-        });
-      }
-
+      this.updateStatus(0, 'good', 'Registered');
       return true;
+
     } catch (error) {
       this.log(`Service Worker failed: ${error.message}`, 'error');
-      return false;
+      this.updateStatus(0, 'bad', 'Failed');
+      
+      // Fallback: Try without scope
+      try {
+        const registration = await navigator.serviceWorker.register('sw.js');
+        this.log('Service Worker registered without scope', 'warning');
+        this.updateStatus(0, 'warning', 'Limited Scope');
+        return true;
+      } catch (error2) {
+        this.log(`Fallback also failed: ${error2.message}`, 'error');
+        return false;
+      }
     }
+  }
+
+  checkManifest() {
+    return new Promise((resolve) => {
+      const manifestLink = document.querySelector('link[rel="manifest"]');
+      if (!manifestLink) {
+        this.updateStatus(1, 'bad', 'No Manifest');
+        resolve(false);
+        return;
+      }
+
+      fetch(manifestLink.href)
+        .then(response => response.json())
+        .then(manifest => {
+          this.log('Manifest loaded successfully', 'success');
+          this.updateStatus(1, 'good', 'Loaded');
+          resolve(true);
+        })
+        .catch(error => {
+          this.log(`Manifest error: ${error.message}`, 'error');
+          this.updateStatus(1, 'bad', 'Load Failed');
+          resolve(false);
+        });
+    });
   }
 
   setupEventListeners() {
     // Android/Chrome beforeinstallprompt
     window.addEventListener('beforeinstallprompt', (e) => {
-      this.log('🎯 PWA installation available!', 'success');
+      this.log('PWA installation available!', 'success');
       e.preventDefault();
       this.deferredPrompt = e;
       
-      // Enable Android install button
-      if (this.elements.androidInstall) {
-        this.elements.androidInstall.disabled = false;
-        this.elements.androidInstall.querySelector('#androidText').textContent = '📲 Install Now';
-      }
-      
-      // Show Android instructions
-      if (this.elements.androidInstructions) {
-        this.elements.androidInstructions.classList.add('active');
-      }
-
-      this.updateStatus(0, 'good', 'Ready to Install!');
+      this.elements.androidInstall.disabled = false;
+      this.elements.androidInstall.textContent = '📲 Install Now';
+      this.elements.androidInstructions.classList.add('active');
+      this.updateStatus(2, 'good', 'Ready!');
     });
 
-    // Android install button
-    if (this.elements.androidInstall) {
-      this.elements.androidInstall.addEventListener('click', () => this.installPWA());
-    }
-
-    // iOS install button
-    if (this.elements.iosInstall) {
-      this.elements.iosInstall.addEventListener('click', () => this.showIOSInstructions());
-    }
-
-    // Track successful installation
-    window.addEventListener('appinstalled', () => {
-      this.log('🎉 PWA successfully installed!', 'success');
-      this.deferredPrompt = null;
-      this.updateStatus(0, 'good', 'Installed! 🎉');
+    // Android install
+    this.elements.androidInstall.addEventListener('click', () => {
+      if (this.deferredPrompt) {
+        this.deferredPrompt.prompt();
+        this.deferredPrompt.userChoice.then((choiceResult) => {
+          this.log(`Install: ${choiceResult.outcome}`, 'success');
+          this.deferredPrompt = null;
+        });
+      }
     });
-  }
 
-  async installPWA() {
-    if (this.deferredPrompt) {
-      this.log('Starting PWA installation...');
-      this.deferredPrompt.prompt();
-      
-      const choiceResult = await this.deferredPrompt.userChoice;
-      this.log(`User choice: ${choiceResult.outcome}`, 'success');
-      
-      this.deferredPrompt = null;
-    } else {
-      this.log('Installation not available yet', 'warning');
-      alert('Installation will be available soon. Please ensure:\n1. You are using Chrome/Edge on Android\n2. You have visited this site before\n3. You are not in incognito mode');
-    }
-  }
-
-  showIOSInstructions() {
-    if (this.elements.iosInstructions) {
+    // iOS install
+    this.elements.iosInstall.addEventListener('click', () => {
       this.elements.iosInstructions.classList.add('active');
-      this.log('Showing iOS installation instructions', 'info');
-    }
+      this.log('Showing iOS instructions', 'info');
+    });
+
+    // Track installation
+    window.addEventListener('appinstalled', () => {
+      this.log('App installed successfully!', 'success');
+      this.updateStatus(2, 'good', 'Installed!');
+    });
   }
 
   async init() {
-    this.log('Initializing D\'NestGlobal PWA...');
-    
-    // Update platform info
-    this.log(`Platform: ${this.isIOS ? 'iOS' : this.isAndroid ? 'Android' : 'Other'}`);
-    this.log(`Standalone: ${this.isStandalone ? 'Yes' : 'No'}`);
-    this.log(`User Agent: ${navigator.userAgent}`);
+    this.log('Initializing GitHub Pages PWA...');
+    this.log(`Repo: ${window.location.hostname}`);
+    this.log(`Standalone: ${this.isStandalone}`);
 
-    // Check requirements
-    const requirements = await this.checkRequirements();
-    
-    // Register service worker
-    if (requirements.hasSW) {
-      await this.registerServiceWorker();
+    // Check if we're on GitHub Pages
+    if (window.location.hostname.includes('github.io')) {
+      this.log('GitHub Pages detected - using compatible setup', 'info');
     }
 
-    // Setup event listeners
+    // Register service worker
+    await this.registerServiceWorker();
+
+    // Check manifest
+    await this.checkManifest();
+
+    // Setup events
     this.setupEventListeners();
 
-    // Show iOS instructions by default on iOS
-    if (this.isIOS && !this.isStandalone) {
-      this.showIOSInstructions();
+    // Show iOS instructions on iOS
+    if (this.isIOS) {
+      this.elements.iosInstructions.classList.add('active');
     }
 
-    // Final status
-    if (this.isStandalone) {
-      this.updateStatus(0, 'good', 'Running as Installed App!');
-      this.log('App is running in standalone mode', 'success');
-    }
-
-    this.log('PWA initialization complete');
+    this.log('PWA ready for installation');
   }
 }
 
-// Initialize when DOM is ready
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
-  window.pwaInstaller = new PWAInstaller();
+  new GitHubPagesPWA();
 });
-
-window.matchMedia('(display-mode: standalone)').addEventListener('change', (evt) => {
-  const mode = evt.matches ? 'standalone' : 'browser';
-  console.log(`Display mode changed to: ${mode}`);
-});
-
 </script>
-
 </body>
 </html>
