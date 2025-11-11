@@ -1,41 +1,37 @@
-const CACHE_NAME = 'dnestglobal-v2.0';
+const CACHE_NAME = 'dnestglobal-ios-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/favicon-32x32.png',
-  '/favicon-16x16.png'
+  './',
+  './index.html',
+  './manifest.json',
+  './favicon-32x32.png',
+  './favicon-16x16.png',
+  './apple-touch-icon.png'
 ];
 
-// Install event
+// Install
 self.addEventListener('install', (event) => {
-  console.log('🔧 Service Worker installing...');
-  self.skipWaiting(); // Activate immediately
-  
+  console.log('🟢 Service Worker installing...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('✅ Cache opened');
         return cache.addAll(urlsToCache);
       })
-      .catch((error) => {
-        console.error('❌ Cache addAll failed:', error);
-      })
+      .then(() => self.skipWaiting())
   );
 });
 
-// Activate event
+// Activate
 self.addEventListener('activate', (event) => {
-  console.log('🎯 Service Worker activated');
-  event.waitUntil(self.clients.claim()); // Take control immediately
+  console.log('🟢 Service Worker activated');
+  event.waitUntil(self.clients.claim());
 });
 
-// Fetch event
+// Fetch
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
-        // Return cached version or fetch from network
         return response || fetch(event.request);
       })
   );
