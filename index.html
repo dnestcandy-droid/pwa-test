@@ -20,7 +20,7 @@
   <!-- Icons with absolute paths -->
   <link rel="icon" type="image/png" href="/favicon-32x32.png">
   <link rel="apple-touch-icon" href="/favicon-32x32.png">
-  <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
+  <link rel="manifest" href="https://dnestcandy-droid.github.io/pwa-test/manifest.json" crossorigin="use-credentials">
 
   <style>
     * {
@@ -513,6 +513,12 @@ class PWAInstaller {
 document.addEventListener('DOMContentLoaded', () => {
   window.pwaInstaller = new PWAInstaller();
 });
+
+window.matchMedia('(display-mode: standalone)').addEventListener('change', (evt) => {
+  const mode = evt.matches ? 'standalone' : 'browser';
+  console.log(`Display mode changed to: ${mode}`);
+});
+
 </script>
 
 </body>
