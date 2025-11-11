@@ -43,16 +43,15 @@
       border-radius: 20px;
       padding: 30px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      text-align: center;
     }
 
     h1 {
-      text-align: center;
       color: #333;
       margin-bottom: 10px;
     }
 
     .subtitle {
-      text-align: center;
       color: #666;
       margin-bottom: 30px;
     }
@@ -60,6 +59,7 @@
     .feature {
       display: flex;
       align-items: center;
+      justify-content: center;
       margin: 15px 0;
       padding: 15px;
       background: #f8f9fa;
@@ -72,7 +72,6 @@
       border-radius: 15px;
       padding: 25px;
       margin: 25px 0;
-      text-align: center;
     }
 
     .install-btn {
@@ -85,7 +84,7 @@
       font-weight: bold;
       cursor: pointer;
       margin: 10px;
-      box-shadow: 0 4px 15px rgba(0,200,83,0.3);
+      width: 200px;
     }
 
     .install-btn:disabled {
@@ -98,6 +97,7 @@
       border-radius: 15px;
       padding: 20px;
       margin: 20px 0;
+      text-align: left;
       display: none;
     }
 
@@ -111,6 +111,7 @@
       border-radius: 15px;
       padding: 20px;
       margin: 20px 0;
+      text-align: left;
     }
 
     .status-item {
@@ -143,6 +144,15 @@
       font-size: 12px;
       max-height: 200px;
       overflow-y: auto;
+      text-align: left;
+    }
+
+    .manual-install {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 15px 0;
     }
   </style>
 </head>
@@ -152,35 +162,36 @@
     <p class="subtitle">Progressive Web App</p>
 
     <div class="feature">
-      <span style="margin-right: 15px;">📱</span>
-      <span>Install on home screen</span>
+      <span>📱 Install on home screen</span>
     </div>
     <div class="feature">
-      <span style="margin-right: 15px;">⚡</span>
-      <span>Fast loading & offline support</span>
+      <span>⚡ Fast loading & offline support</span>
     </div>
     <div class="feature">
-      <span style="margin-right: 15px;">🔔</span>
-      <span>Push notifications</span>
+      <span>🔔 Push notifications</span>
     </div>
 
     <div class="install-section">
       <h3>📲 Install Our App</h3>
       <p>Get the full mobile experience</p>
       
-      <button class="install-btn" id="androidInstall" disabled>
-        Install for Android
-      </button>
-      
-      <button class="install-btn" id="iosInstall">
-        Install for iPhone
-      </button>
+      <div>
+        <button class="install-btn" id="installBtn" disabled>
+          Install App
+        </button>
+      </div>
+    </div>
+
+    <div class="manual-install">
+      <h3>🔧 Manual Installation</h3>
+      <p><strong>Android:</strong> Chrome menu → "Add to Home screen"</p>
+      <p><strong>iPhone:</strong> Share button → "Add to Home Screen"</p>
     </div>
 
     <div class="instructions" id="androidInstructions">
       <h3>🤖 Android Installation</h3>
       <ol>
-        <li>Tap Chrome menu (3 dots)</li>
+        <li>Tap Chrome menu (3 dots) in top right</li>
         <li>Select "Add to Home screen"</li>
         <li>Confirm installation</li>
       </ol>
@@ -189,14 +200,14 @@
     <div class="instructions" id="iosInstructions">
       <h3>🍎 iPhone Installation</h3>
       <ol>
-        <li>Tap Share button <span style="font-size:18px">⎋</span></li>
-        <li>Select "Add to Home Screen"</li>
-        <li>Tap "Add"</li>
+        <li>Tap Share button <span style="font-size:18px">⎋</span> at bottom</li>
+        <li>Scroll down and select "Add to Home Screen"</li>
+        <li>Tap "Add" in top right corner</li>
       </ol>
     </div>
 
     <div class="status-panel">
-      <h3 style="color: white;">🔍 Installation Status</h3>
+      <h3 style="color: white; text-align: center;">🔍 PWA Status</h3>
       <div id="statusItems">
         <div class="status-item">
           <span>Service Worker</span>
@@ -206,51 +217,69 @@
           </div>
         </div>
         <div class="status-item">
-          <span>Manifest</span>
+          <span>Web App Manifest</span>
           <div>
             <span class="status-indicator bad"></span>
             <span>Checking...</span>
           </div>
         </div>
         <div class="status-item">
-          <span>Install Ready</span>
+          <span>Installable</span>
           <div>
             <span class="status-indicator bad"></span>
             <span>Checking...</span>
+          </div>
+        </div>
+        <div class="status-item">
+          <span>Standalone Mode</span>
+          <div>
+            <span class="status-indicator bad"></span>
+            <span id="standaloneStatus">Checking...</span>
           </div>
         </div>
       </div>
     </div>
 
     <div class="debug">
-      <strong>Console:</strong>
-      <div id="debugConsole">Initializing...</div>
+      <strong>Debug Console:</strong>
+      <div id="debugConsole">Initializing PWA...</div>
     </div>
   </div>
 
 <script>
-class GitHubPagesPWA {
+// PWA Manager for GitHub Pages
+class PWAManager {
   constructor() {
     this.deferredPrompt = null;
     this.isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     this.isAndroid = /Android/.test(navigator.userAgent);
     this.isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+    this.isGitHubPages = window.location.hostname.includes('github.io');
     
     this.elements = {
-      androidInstall: document.getElementById('androidInstall'),
-      iosInstall: document.getElementById('iosInstall'),
+      installBtn: document.getElementById('installBtn'),
       androidInstructions: document.getElementById('androidInstructions'),
       iosInstructions: document.getElementById('iosInstructions'),
       statusItems: document.getElementById('statusItems'),
-      debugConsole: document.getElementById('debugConsole')
+      debugConsole: document.getElementById('debugConsole'),
+      standaloneStatus: document.getElementById('standaloneStatus')
     };
 
     this.init();
   }
 
   log(message, type = 'info') {
-    const icons = { info: 'ℹ️', success: '✅', error: '❌', warning: '⚠️' };
-    const messageHTML = `<div>${icons[type]} ${message}</div>`;
+    const timestamp = new Date().toLocaleTimeString();
+    const icons = { 
+      info: 'ℹ️', 
+      success: '✅', 
+      error: '❌', 
+      warning: '⚠️',
+      rocket: '🚀',
+      mobile: '📱'
+    };
+    
+    const messageHTML = `<div>${icons[type] || '📝'} [${timestamp}] ${message}</div>`;
     
     console.log(`PWA: ${message}`);
     if (this.elements.debugConsole) {
@@ -260,47 +289,77 @@ class GitHubPagesPWA {
   }
 
   updateStatus(index, status, message) {
-    const statusElement = this.elements.statusItems.children[index];
-    if (statusElement) {
+    if (this.elements.statusItems && this.elements.statusItems.children[index]) {
+      const statusElement = this.elements.statusItems.children[index];
       const indicator = statusElement.querySelector('.status-indicator');
       const text = statusElement.querySelector('.status-item div span:last-child');
       
-      indicator.className = `status-indicator ${status}`;
-      text.textContent = message;
+      if (indicator) indicator.className = `status-indicator ${status}`;
+      if (text) text.textContent = message;
     }
   }
 
+  updateStandaloneStatus() {
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+    this.isStandalone = isStandalone;
+    
+    if (this.elements.standaloneStatus) {
+      this.elements.standaloneStatus.textContent = isStandalone ? 'Yes ✅' : 'No ❌';
+    }
+    
+    this.updateStatus(3, isStandalone ? 'good' : 'bad', 
+      isStandalone ? 'Running as App' : 'Not in App Mode');
+    
+    return isStandalone;
+  }
+
+  // GitHub Pages compatible Service Worker registration
   async registerServiceWorker() {
     if (!('serviceWorker' in navigator)) {
-      this.log('Service Worker not supported', 'error');
+      this.log('Service Worker not supported by browser', 'error');
+      this.updateStatus(0, 'bad', 'Not Supported');
       return false;
     }
 
     try {
-      // GitHub Pages requires service worker to be in root or same directory
-      // Use current directory scope for GitHub Pages compatibility
-      const registration = await navigator.serviceWorker.register('sw.js', {
-        scope: './' // Current directory scope for GitHub Pages
-      });
+      // Try multiple registration strategies for GitHub Pages
+      const strategies = [
+        { path: 'sw.js', scope: './' },
+        { path: './sw.js', scope: './' },
+        { path: 'sw.js', scope: '.' },
+        { path: './sw.js', scope: '.' }
+      ];
 
-      this.log('Service Worker registered successfully', 'success');
-      this.updateStatus(0, 'good', 'Registered');
-      return true;
+      let registration = null;
+      
+      for (let strategy of strategies) {
+        try {
+          this.log(`Trying SW: ${strategy.path} with scope: ${strategy.scope}`, 'info');
+          registration = await navigator.serviceWorker.register(strategy.path, {
+            scope: strategy.scope,
+            updateViaCache: 'none'
+          });
+          
+          this.log(`✅ Service Worker registered successfully with scope: ${registration.scope}`, 'success');
+          this.updateStatus(0, 'good', 'Registered');
+          return true;
+          
+        } catch (err) {
+          this.log(`Failed: ${strategy.path} - ${err.message}`, 'warning');
+          continue;
+        }
+      }
+
+      // If all strategies fail
+      throw new Error('All Service Worker registration strategies failed');
 
     } catch (error) {
-      this.log(`Service Worker failed: ${error.message}`, 'error');
-      this.updateStatus(0, 'bad', 'Failed');
+      this.log(`❌ Service Worker failed: ${error.message}`, 'error');
+      this.updateStatus(0, 'bad', 'Registration Failed');
       
-      // Fallback: Try without scope
-      try {
-        const registration = await navigator.serviceWorker.register('sw.js');
-        this.log('Service Worker registered without scope', 'warning');
-        this.updateStatus(0, 'warning', 'Limited Scope');
-        return true;
-      } catch (error2) {
-        this.log(`Fallback also failed: ${error2.message}`, 'error');
-        return false;
-      }
+      // Even if SW fails, we can still be a PWA with manifest
+      this.log('⚠️ Continuing without Service Worker - limited functionality', 'warning');
+      return false;
     }
   }
 
@@ -308,94 +367,157 @@ class GitHubPagesPWA {
     return new Promise((resolve) => {
       const manifestLink = document.querySelector('link[rel="manifest"]');
       if (!manifestLink) {
-        this.updateStatus(1, 'bad', 'No Manifest');
+        this.log('No manifest link found', 'error');
+        this.updateStatus(1, 'bad', 'Not Found');
         resolve(false);
         return;
       }
 
       fetch(manifestLink.href)
-        .then(response => response.json())
+        .then(response => {
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          return response.json();
+        })
         .then(manifest => {
-          this.log('Manifest loaded successfully', 'success');
+          this.log('✅ Manifest loaded successfully', 'success');
           this.updateStatus(1, 'good', 'Loaded');
+          
+          // Check critical manifest properties
+          const hasIcons = manifest.icons && manifest.icons.length > 0;
+          const hasStartUrl = manifest.start_url;
+          
+          if (!hasIcons) this.log('⚠️ Manifest missing icons', 'warning');
+          if (!hasStartUrl) this.log('⚠️ Manifest missing start_url', 'warning');
+          
           resolve(true);
         })
         .catch(error => {
-          this.log(`Manifest error: ${error.message}`, 'error');
+          this.log(`❌ Manifest error: ${error.message}`, 'error');
           this.updateStatus(1, 'bad', 'Load Failed');
           resolve(false);
         });
     });
   }
 
-  setupEventListeners() {
-    // Android/Chrome beforeinstallprompt
+  setupPWAEvents() {
+    // Listen for beforeinstallprompt (Android/Chrome)
     window.addEventListener('beforeinstallprompt', (e) => {
-      this.log('PWA installation available!', 'success');
+      this.log('🎉 PWA installation available!', 'success');
       e.preventDefault();
       this.deferredPrompt = e;
       
-      this.elements.androidInstall.disabled = false;
-      this.elements.androidInstall.textContent = '📲 Install Now';
-      this.elements.androidInstructions.classList.add('active');
-      this.updateStatus(2, 'good', 'Ready!');
-    });
-
-    // Android install
-    this.elements.androidInstall.addEventListener('click', () => {
-      if (this.deferredPrompt) {
-        this.deferredPrompt.prompt();
-        this.deferredPrompt.userChoice.then((choiceResult) => {
-          this.log(`Install: ${choiceResult.outcome}`, 'success');
-          this.deferredPrompt = null;
-        });
+      // Enable install button
+      if (this.elements.installBtn) {
+        this.elements.installBtn.disabled = false;
+        this.elements.installBtn.textContent = '📲 Install Now';
+        this.elements.installBtn.style.background = 'linear-gradient(135deg, #FF6B6B, #FF8E53)';
+      }
+      
+      this.updateStatus(2, 'good', 'Ready to Install!');
+      
+      // Show platform-specific instructions
+      if (this.isAndroid && this.elements.androidInstructions) {
+        this.elements.androidInstructions.classList.add('active');
       }
     });
 
-    // iOS install
-    this.elements.iosInstall.addEventListener('click', () => {
-      this.elements.iosInstructions.classList.add('active');
-      this.log('Showing iOS instructions', 'info');
+    // Install button handler
+    if (this.elements.installBtn) {
+      this.elements.installBtn.addEventListener('click', () => {
+        this.installPWA();
+      });
+    }
+
+    // Track successful installation
+    window.addEventListener('appinstalled', (e) => {
+      this.log('🎊 PWA successfully installed!', 'success');
+      this.updateStatus(2, 'good', 'Installed! 🎉');
+      this.updateStandaloneStatus();
+      
+      if (this.elements.installBtn) {
+        this.elements.installBtn.disabled = true;
+        this.elements.installBtn.textContent = '✅ Installed';
+      }
     });
 
-    // Track installation
-    window.addEventListener('appinstalled', () => {
-      this.log('App installed successfully!', 'success');
-      this.updateStatus(2, 'good', 'Installed!');
-    });
+    // Show iOS instructions
+    if (this.isIOS && this.elements.iosInstructions) {
+      this.elements.iosInstructions.classList.add('active');
+    }
+  }
+
+  async installPWA() {
+    if (this.deferredPrompt) {
+      try {
+        this.log('Starting PWA installation...', 'info');
+        this.deferredPrompt.prompt();
+        
+        const choiceResult = await this.deferredPrompt.userChoice;
+        this.log(`User choice: ${choiceResult.outcome}`, 'success');
+        
+        this.deferredPrompt = null;
+        
+      } catch (error) {
+        this.log(`Installation error: ${error.message}`, 'error');
+      }
+    } else {
+      this.log('Installation not available yet', 'warning');
+      
+      // Show manual instructions
+      if (this.isAndroid) {
+        alert('For Android: Tap the 3-dot menu → "Add to Home screen"');
+      } else if (this.isIOS) {
+        alert('For iPhone: Tap the share button → "Add to Home Screen"');
+      } else {
+        alert('Check browser menu for "Install app" or "Add to Home screen" option');
+      }
+    }
   }
 
   async init() {
-    this.log('Initializing GitHub Pages PWA...');
-    this.log(`Repo: ${window.location.hostname}`);
-    this.log(`Standalone: ${this.isStandalone}`);
+    this.log('🚀 Initializing D\'NestGlobal PWA...', 'rocket');
+    this.log(`📍 GitHub Pages: ${this.isGitHubPages}`, 'info');
+    this.log(`📱 Platform: ${this.isIOS ? 'iOS' : this.isAndroid ? 'Android' : 'Desktop'}`, 'mobile');
+    
+    // Update standalone status
+    this.updateStandaloneStatus();
 
-    // Check if we're on GitHub Pages
-    if (window.location.hostname.includes('github.io')) {
-      this.log('GitHub Pages detected - using compatible setup', 'info');
-    }
-
-    // Register service worker
+    // Register Service Worker (even if it fails, continue)
     await this.registerServiceWorker();
 
-    // Check manifest
+    // Check Manifest
     await this.checkManifest();
 
-    // Setup events
-    this.setupEventListeners();
+    // Setup PWA events
+    this.setupPWAEvents();
 
-    // Show iOS instructions on iOS
-    if (this.isIOS) {
-      this.elements.iosInstructions.classList.add('active');
-    }
-
-    this.log('PWA ready for installation');
+    // Final status check
+    setTimeout(() => {
+      this.log('✅ PWA initialization complete', 'success');
+      this.log('💡 Tip: On mobile, use browser menu to "Add to Home Screen"', 'info');
+      
+      // If still not installable after 5 seconds, show manual options
+      if (!this.deferredPrompt && !this.isStandalone) {
+        this.updateStatus(2, 'warning', 'Use Browser Menu');
+        if (this.elements.installBtn) {
+          this.elements.installBtn.disabled = false;
+          this.elements.installBtn.textContent = '📱 Manual Install';
+        }
+      }
+    }, 5000);
   }
 }
 
-// Initialize
+// Initialize PWA when page loads
 document.addEventListener('DOMContentLoaded', () => {
-  new GitHubPagesPWA();
+  window.pwaManager = new PWAManager();
+});
+
+// Update standalone status when display mode changes
+window.matchMedia('(display-mode: standalone)').addListener((e) => {
+  if (window.pwaManager) {
+    window.pwaManager.updateStandaloneStatus();
+  }
 });
 </script>
 </body>
